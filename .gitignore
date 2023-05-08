@@ -4,3 +4,7 @@ npm-debug.log
 .nyc
 .env
 .DS_Store
+config.js
+wmp2mqtt.log
+launch.json
+log

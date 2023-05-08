@@ -1,0 +1,70 @@
+var config = {};
+
+config.intesis = {};
+config.mqtt = {};
+
+// set the logging levels here
+config.logs = {
+    "level": {
+        "console" : "debug",
+        "file" : "debug"
+    }
+}
+
+// set your intesis devices here or use discovery
+config.intesis = {
+    "discover" : false,
+    "devices" : [
+        // an intesis device can be of type "box" or "gateway"
+        // a box handles a single AC unit while a gateway can depeding on the license handle up to 64 units
+        // if configuring a gateway make sure the id corresponds to the unit id specified in the Intesis MAPS application
+        // offmode,boolean - adds an OFF mode to the available modes and turns the ONOFF function to ON when any mode is selected and OFF when OFF mode is selected, usfull for Home Assistant MQTT HVAC initegration when a seperate on/off MQTT switch is not wanted
+        // keepAliveMode,enum - "off" = no keep alive for this intesis device, "ping" = use the ping feature, "id" = old method of querying id to keep alive, "polling" = get all AC unit data every time a keep alive is requested
+        {
+        "type": "gateway",
+        "ip": "192.168.10.111", 
+        "port": 3310, 
+        "keepAliveMode": "ping", 
+        "offMode": false, 
+        "units": [
+            {"id": 1, "type": "IU", "description": "Living Room"},
+            {"id": 2, "type": "IU", "description": "Office"},
+            {"id": 3, "type": "IU", "description": "Bedroom"}
+        ]}
+    ]
+}
+
+// note the options part of this object is passed directly to the MQTT.js connect function see here: https://github.com/mqttjs/MQTT.js#connect for detalied options regarding different options available.
+config.mqtt.connection = {
+    "url": "mqtt://127.0.0.1",
+    "port": 1883,
+    "options":{
+        "clientId": "wmp2mqtt",
+        "keepalive": 60,
+        "clean": true,
+        "will": {
+            "topic": "stat/hvac/intesis/status",
+            "payload": "offline",
+            "retain": true,
+            "qos": 0
+        },
+        "onconnection": { // use this to set a topic to payload on successful connection, usful to determine availability
+            "topic": "stat/hvac/intesis/status",
+            "payload": "online",
+            "retain": true
+        },
+        "username": "mqtt_user",
+        "password": "mqtt_secret_password"
+    }
+}
+
+config.mqtt.publish = {
+    "topic": "stat/hvac/intesis", //data will be published under this topic
+    "retain": true
+}
+
+config.mqtt.subscribe = { //wmp2mqtt will subscribe to this topic to receive commands
+    "topic": "cmnd/hvac/intesis"
+}
+
+module.exports = config;
