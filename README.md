@@ -61,15 +61,15 @@ docker run -d \
 ```
 
 Using container with args:
-Now assuming your logs are to be saved at /home/wmp2mqtt/log run the following command to create the container but replace the args with your preferred values.
+Assuming your logs are to be saved at /home/wmp2mqtt/log run the following command to create the container but replace the args with your preferred values.
 ```
 docker run -d \
 	--name=wmp2mqtt \
 	--network=bridge \
-    -e MQTT_SERVER='mqtt://127.0.0.1:1883'
-    -e WMP_IPS=''
-    -e DISCOVER='false'
-    -e RETAIN='false'
+    -e MQTT_SERVER='mqtt://127.0.0.1:1883' \
+    -e WMP_IPS='' \
+    -e DISCOVER='false' \
+    -e RETAIN='false' \
 	-v /home/wmp2mqtt/log:/app/log \
 	--restart always \
   wmp2mqtt:v1.0
