@@ -301,9 +301,15 @@ let wmpConnect = function (device) {
 
         logger.info("Device " + wmpclient.mac + " keep alive configured in " + device.keepAliveMode + " mode!");
 
+        wmpclient.readyIntervalID = undefined;
+
         wmpclient.on('close', function () {
             logger.warn('Device ' + wmpclient.mac + ' WMP Connection closed!');
             
+            // if we encounter a disconnect while waiting for Intesis to be ready clear the setInterval put in place to check for ready
+            if(wmpclient.readyIntervalID) {
+                clearInterval(wmpclient.readyIntervalID);
+            }
             // post our device WLT informing subscribers we are going offline
             mqttPublish(mqttClient, config.mqtt.publish.topic + "/" + wmpclient.mac + "/" + CONSTANTS.MQTT_INTESIS_AVAILABILITY_TOPIC_SUFFIX , CONSTANTS.MQTT_INTESIS_AVAILABILITY_PAYLOAD_OFFLINE, config.mqtt.publish.retain)
             
@@ -328,21 +334,20 @@ let wmpConnect = function (device) {
         }
         macToClient[wmpclient.mac] = wmpclient
 
-        // query the first AC AMBTEMP feature, if it is zero this means the intesis box is not ready yet so wait 10 seconds and try again finally settiing us to online when Intesis is ready
+        // query AMBTEMP & SETPTEMP features of all AC's, if they are zero this means intesis is not ready yet so wait 10 seconds and try again finally setting us to online when Intesis is ready
         wmpRefresh(wmpclient); 
         setTimeout( function() {  
             if(!wmpIsIntesisReady(wmpclient)) {   
                 logger.info("Device " + wmpclient.mac + " is not ready yet, will check again in " + CONSTANTS.INTESIS_READY_TIMEOUT/1000 + " seconds.")
-                
-                let intervalID = setInterval(function() {
-                    if(wmpIsIntesisReady(wmpclient)) {
+                wmpclient.readyIntervalID = setInterval(function() {
+                if(wmpIsIntesisReady(wmpclient)) {
                         logger.info("Device " + wmpclient.mac + " finished initializing and is ready.")
-                        clearInterval(intervalID);
+                        clearInterval(wmpclient.readyIntervalID);
                         wmpFinishSetup(wmpclient);
-                    }
-                    else {
+                }
+                else {
                         logger.info("Device " + wmpclient.mac + " is not ready yet, will check again in " + CONSTANTS.INTESIS_READY_TIMEOUT/1000 + " seconds.")
-                    }
+                }
                 }, CONSTANTS.INTESIS_READY_TIMEOUT)
             }
             else {
