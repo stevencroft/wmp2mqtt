@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -21,7 +21,7 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag chamodshehanka/node-test:$(date +%s)
+      run: docker build . --file Dockerfile --tag stevec81/wmp2mqtt:$(date +%s)
       
     - name: Docker Push
-      run: docker push chamodshehanka/node-test
+      run: docker push stevec81/wmp2mqtt
