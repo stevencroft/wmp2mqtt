@@ -62,8 +62,10 @@ logger.info("!------------------------WMP2MQTT started!-----------------------!"
 
 // try loading config.js supporting new features
 try {
-    if (fs.existsSync('./config/config.js')) {
-        config = require('./config/config');
+    //if (fs.existsSync('./config/config.js')) {
+    if (fs.existsSync(argv.configfile)) {
+        //config = require('./config/config');
+        config = require(argv.configfile);
         transports.console.level = config.logs.levels.console;
         transports.file.level = config.logs.levels.console;
         logger.info("Config.js found and loaded, ignoring args.");
