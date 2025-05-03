@@ -2,7 +2,7 @@
 
 const CONSTANTS = require('./constants');
 const WMP = require('./wmp_protocol');
-
+const yargs = require('yargs/yargs'); // new yargs
 var winston = require('winston');
 
 const alignColorsAndTime = winston.format.combine(
@@ -89,7 +89,7 @@ if(!config.mqtt.connection.url)
     config.mqtt.publish = {};
     config.mqtt.subscribe = {};
 
-    //const argv = require('yargs')
+    const argv = require('yargs')
     const argv = yargs(process.argv.slice(2)) // Pass process.argv correctly
     .usage(CONSTANTS.USAGE_STRING)
     .demandOption(['mqtt'])
