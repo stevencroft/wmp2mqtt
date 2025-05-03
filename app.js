@@ -62,10 +62,10 @@ logger.info("!------------------------WMP2MQTT started!-----------------------!"
 
 // try loading config.js supporting new features
 try {
-    //if (fs.existsSync('./config/config.js')) {
-    if (fs.existsSync(argv.configfile)) {
-        //config = require('./config/config');
-        config = require(argv.configfile);
+    if (fs.existsSync('./config/config.js')) {
+    //if (fs.existsSync(argv.configfile)) {
+        config = require('./config/config');
+        //config = require(argv.configfile);
         transports.console.level = config.logs.levels.console;
         transports.file.level = config.logs.levels.console;
         logger.info("Config.js found and loaded, ignoring args.");
@@ -89,16 +89,23 @@ if(!config.mqtt.connection.url)
     config.mqtt.publish = {};
     config.mqtt.subscribe = {};
 
-    const argv = require('yargs')
-        .usage(CONSTANTS.USAGE_STRING)
-        .demandOption(['mqtt'])
-        .argv;
+    //const argv = require('yargs')
+    const argv = yargs(process.argv.slice(2)) // Pass process.argv correctly
+    .usage(CONSTANTS.USAGE_STRING)
+    .demandOption(['mqtt'])
+    .option('offMode', { // Add this option
+      alias: 'o',
+      type: 'boolean',
+      description: 'Set the off mode behavior for discovered or manually specified devices',
+      default: false // Keep default as false
+    })
+    .argv;
 
     config.intesis.devices = [];
     if (argv.wmp) {
         let supplied_intesis_ips = [];
         supplied_intesis_ips = argv.wmp.split(',');
-        supplied_intesis_ips.forEach(ip => config.intesis.devices.push({"type": "box", "ip": ip, "port": CONSTANTS.WMP_DEFAULT_PORT, "keepAliveMode": "id", "offMode": false, units:[{"id": 1, "type": "IU", "description": "AC Unit"}]}));
+        supplied_intesis_ips.forEach(ip => config.intesis.devices.push({"type": "box", "ip": ip, "port": CONSTANTS.WMP_DEFAULT_PORT, "keepAliveMode": "id", "offMode": argv.offMode , units:[{"id": 1, "type": "IU", "description": "AC Unit"}]}));
     }
 
     config.intesis.discover = argv.discover;
@@ -392,7 +399,7 @@ config.intesis.devices.map(device => {
 let doDiscover = function() {
     wmp.discover(1000, function (data) {
         logger.info("Discovered")
-        wmpConnect({"type": "box", "ip": data.ip, "port": CONSTANTS.WMP_DEFAULT_PORT, "keepAliveMode": "id", "offMode": false, units:[{"id": 1, "type": "IU", "description": "AC Unit"}]});
+        wmpConnect({"type": "box", "ip": data.ip, "port": CONSTANTS.WMP_DEFAULT_PORT, "keepAliveMode": "id", "offMode": argv.offMode, units:[{"id": 1, "type": "IU", "description": "AC Unit"}]});
     }, function(){
         if(Object.keys(macToClient).length === 0) {
             logger.info("Nothing connected, retrying discovery in " + CONSTANTS.DISCOVER_WAIT + " seconds..");
