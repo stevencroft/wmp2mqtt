@@ -1,8 +1,10 @@
 #!/bin/sh
-
+# 1. Define the configuration path using an environment variable
+# If CONFIG_PATH is not set in Docker/Unraid, it defaults to /appdata/settings.js
+FILE="${CONFIG_PATH:-/appdata/settings.js}"
 ARGS=""
 
-FILE=/app/config/config.js
+#FILE=/app/config/config.js
 if [ -f "$FILE" ]; then
     echo "$FILE exists, using for configuration."
 else 
