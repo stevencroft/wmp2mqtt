@@ -4,6 +4,7 @@ const CONSTANTS = require('./constants');
 const WMP = require('./wmp_protocol');
 const yargs = require('yargs/yargs'); // new yargs
 var winston = require('winston');
+const path = require('path');
 
 const alignColorsAndTime = winston.format.combine(
     winston.format.colorize({
@@ -61,7 +62,6 @@ var config = {};
 logger.info("!------------------------WMP2MQTT started!-----------------------!");
 
 // try loading config.js supporting new features
-const path = require('path');
 const configPath = process.env.CONFIG_PATH || './settings.js';
 try {
     //19122025 if (fs.existsSync('./config/config.js')) {
