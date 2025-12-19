@@ -62,12 +62,12 @@ var config = {};
 logger.info("!------------------------WMP2MQTT started!-----------------------!");
 
 // try loading config.js supporting new features
-const configPath = process.env.CONFIG_PATH || './settings.js';
+//const configPath = process.env.CONFIG_PATH || './settings.js';
 try {
     //19122025 if (fs.existsSync('./config/config.js')) {
     //if (fs.existsSync(argv.configfile)) {
-    if (fs.existsSync(configPath)) {
-        config = require(configPath);
+    if (fs.existsSync(process.env.CONFIG_FILE)) {
+        config = require(process.env.CONFIG_FILE);
         //19122025 config = require('./config/config');
         //config = require(argv.configfile);
         transports.console.level = config.logs.levels.console;
