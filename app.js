@@ -93,8 +93,8 @@ if(!config.mqtt.connection.url)
     config.mqtt.publish = {};
     config.mqtt.subscribe = {};
 
-    const argv = require('yargs')
-    const argv = yargs(process.argv.slice(2)) // Pass process.argv correctly
+    var argv = require('yargs')
+    argv = yargs(process.argv.slice(2)) // Pass process.argv correctly
     .usage(CONSTANTS.USAGE_STRING)
     .demandOption(['mqtt'])
     .option('offMode', { // Add this option
