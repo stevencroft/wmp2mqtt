@@ -24,4 +24,4 @@ jobs:
       run: docker build . --file Dockerfile --tag stevec81/wmp2mqtt:$(date +%s)
       
     - name: Docker Push
-      run: docker push stevec81/wmp2mqtt:tagname
+      run: docker push stevec81/wmp2mqtt:latest
